@@ -29,7 +29,7 @@ void process(FILE* fp, int sock)
 
 int main(int argc, char **argv)  
 {
-    const char* ip = "10.108.36.99";
+    const char* ip = "10.108.xx.xx";
     int port = 9876;
 
     struct sockaddr_in server_addr;
