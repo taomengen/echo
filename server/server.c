@@ -18,7 +18,8 @@
 
 //第一种方法：使用read, write，需要进行用户空间和内核空间的数据拷贝
 void process_has_copy(int connfd)  
-{  
+{   
+    printf("start process_has_copy\n");	
     ssize_t n;  
     char buf[BUFSIZE]; 
     memset(buf, '\0', BUFSIZE); 
@@ -32,13 +33,15 @@ void process_has_copy(int connfd)
 //第二种方法：使用splice和管道，不需要进行用户空间和内核空间的数据拷贝
 void process_no_copy(int connfd)  
 {
-
+    printf("start process_no_copy\n");
     int pipefd[2];
     int ret = pipe(pipefd);
     while (1)
     {
         ret = splice(connfd, NULL, pipefd[1], NULL, 32768, SPLICE_F_MORE | SPLICE_F_MOVE);
         assert(ret != -1);
+		printf("finish connfd to pipefd[1]\n");
+		//printf("pipefd[0] = [%s]\n", pipefd[0]);
         ret = splice(pipefd[0], NULL, connfd, NULL, 32768, SPLICE_F_MORE | SPLICE_F_MOVE);
         assert(ret != -1);
     }
@@ -82,8 +85,10 @@ int main(int argc, char *argv[])
     while (1)  
     {
         struct sockaddr_in client_addr;
-        socklen_t client_addrlen = sizeof(client_addr); 
-        int connfd = accept(sock, (struct sockaddr *)&client_addr, &client_addrlen); 
+        socklen_t client_addrlen = sizeof(client_addr);
+	    printf("before accept\n");	
+        int connfd = accept(sock, (struct sockaddr *)&client_addr, &client_addrlen);
+		printf("after accept\n");
         if (connfd == -1)
         {  
             perror("accept");   
